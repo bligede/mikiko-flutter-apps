@@ -21,7 +21,8 @@ dan berkonsultasi dengan **asisten chatbot AI**.
 
 Saat ini aplikasi berjalan penuh dengan **data simulasi lokal** tanpa backend, jadi bisa
 langsung dicoba. Struktur kode sudah dipisahkan agar tinggal disambungkan ke backend
-nyata (REST + MySQL) dan broker MQTT dari ESP32.
+nyata — yaitu **SUBAKO** (ESP32 → MQTT → TimescaleDB → Grafana) — begitu lapisan HTTP-nya
+tersedia.
 
 ### Fitur
 
@@ -155,7 +156,7 @@ flutter test        # unit test logika state + smoke test UI (branding & dark mo
 | Dokumen | Isi |
 |---|---|
 | [`smart_farming/README.md`](smart_farming/README.md) | Dokumentasi lengkap aplikasi Smart Farming |
-| [`smart_farming/docs/BACKEND.md`](smart_farming/docs/BACKEND.md) | Rencana backend REST + MySQL (XAMPP/Docker), skema, kontrak API |
+| [`smart_farming/docs/BACKEND.md`](smart_farming/docs/BACKEND.md) | Backend **SUBAKO** yang sudah berjalan: MQTT, TimescaleDB, Grafana, pemetaan field, celah integrasi |
 | [`smart_farming/docs/ESP32.md`](smart_farming/docs/ESP32.md) | Perangkat keras, topik & payload MQTT, contoh sketch Arduino |
 
 ---
@@ -165,11 +166,14 @@ flutter test        # unit test logika state + smoke test UI (branding & dark mo
 MVP sengaja memisahkan **lapisan data** dari UI, sehingga mengganti ke backend nyata
 cukup di satu tempat (`lib/data/`). Rencana bertahap:
 
-1. **Backend REST + MySQL** — ganti `MockData` dengan `ApiRepository` berbasis `package:http`.
-2. **Ingest data ESP32** — ESP32 publish ke MQTT → backend simpan ke MySQL → aplikasi baca REST.
-3. **Push notification** — Firebase Cloud Messaging atau `flutter_local_notifications`.
-4. **Auth nyata** — JWT/session dari backend, dengan peran pemilik/pekerja.
-5. **Chatbot AI daring** — arahkan `AiAssistantService(endpoint: ...)` ke penyedia LLM.
+1. **Lapisan baca HTTP untuk backend SUBAKO** — endpoint `/api/devices`, `/readings`,
+   `/readings/latest` di atas TimescaleDB (contoh FastAPI di `docs/BACKEND.md` §6a).
+2. **Sambungkan aplikasi** — ganti `MockData` dengan `ApiRepository` berbasis `package:http`.
+3. **Lengkapi metrik** — kirim `humidity`, `pressure`, `rain` dari BME280 + sensor hujan
+   dan tambahkan kolomnya di schema.
+4. **Push notification** — Firebase Cloud Messaging atau `flutter_local_notifications`.
+5. **Auth nyata** — JWT/session dari backend, dengan peran pemilik/pekerja.
+6. **Chatbot AI daring** — arahkan `AiAssistantService(endpoint: ...)` ke penyedia LLM.
 
 ---
 

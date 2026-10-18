@@ -3,6 +3,11 @@
 Dokumen ini menjelaskan cara perangkat **ESP32** mengirim data sensor yang dipakai
 aplikasi Flutter (soil moisture, BME280, rain sensor) dan menerima perintah pompa.
 
+> **Kondisi nyata saat ini:** backend yang sudah berjalan (repo *SUBAKO*) baru menerima
+> **dua** metrik — `temperature` dan `soil_moisture` — lewat satu topik `subako/sensor`.
+> Topik dan payload di §2 adalah **target lengkap** untuk lima metrik; selisihnya dibahas
+> di [`BACKEND.md` §6–7](BACKEND.md).
+
 ---
 
 ## 1. Perangkat keras
@@ -27,7 +32,19 @@ aplikasi Flutter (soil moisture, BME280, rain sensor) dan menerima perintah pomp
 
 ## 2. Topik MQTT
 
-Struktur topik (siap dipakai backend/broker seperti Mosquitto):
+**Yang dipakai backend SUBAKO sekarang** (lihat `BACKEND.md` §4):
+
+```
+subako/sensor        # ESP32 → broker, satu topik untuk semua node
+```
+
+```json
+{ "device_id": "ESP32-001", "temperature": 28.75, "soil_moisture": 61.2 }
+```
+
+Belum ada topik perintah pompa di backend tersebut.
+
+**Struktur topik target** (lebih kaya, belum diimplementasikan di backend):
 
 ```
 smartfarming/{farm_id}/esp32/{device_id}/telemetry     # ESP32 → broker (pembacaan sensor)
@@ -146,12 +163,12 @@ void loop() {
 ## 4. Alur data lengkap
 
 ```
-ESP32 ──MQTT──► Broker (Mosquitto) ──► Backend (PHP/Node) ──► MySQL
+ESP32 ──MQTT──► Broker (Mosquitto) ──► bridge.py (Python) ──► TimescaleDB
                                             ▲
-                                            │ REST (JSON)
+                                            │ REST (JSON) — belum ada, lihat BACKEND.md §6a
                                      Aplikasi Flutter
                                             │
-                                     Perintah pompa
+                                     Perintah pompa (belum ada, §6c)
                                             ▼
                               Backend ──MQTT──► ESP32 (relay)
 ```

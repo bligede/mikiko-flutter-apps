@@ -13,7 +13,7 @@ desain (lihat [Palet Warna](#palet-warna)).
 
 Saat ini aplikasi berjalan penuh dengan **data simulasi lokal** (tanpa perlu backend),
 sehingga bisa langsung dicoba. Struktur kode sudah disiapkan agar tinggal disambungkan
-ke backend nyata (XAMPP/Docker + MySQL) dan broker MQTT ESP32.
+ke backend nyata (SUBAKO: MQTT + TimescaleDB) dan broker MQTT ESP32.
 
 ---
 
@@ -151,7 +151,7 @@ smart_farming/
 │   ├── app_state_test.dart       # unit test logika (irigasi, jadwal, chat, dll.)
 │   └── widget_test.dart          # smoke test alur login → dasbor
 └── docs/
-    ├── BACKEND.md                # rencana REST API + MySQL (XAMPP/Docker)
+    ├── BACKEND.md                # backend SUBAKO: MQTT, TimescaleDB, Grafana, celah integrasi
     └── ESP32.md                  # topik MQTT + contoh sketch Arduino
 ```
 
@@ -178,14 +178,21 @@ Akun: `demo@smartfarming.id` / nama **Pak Budi**.
 MVP ini sengaja memisahkan **lapisan data** (`lib/data/mock_data.dart`) dari UI, sehingga
 mengganti ke backend nyata cukup di satu tempat. Rencana bertahap:
 
-1. **Backend REST + MySQL** (XAMPP/Docker) — lihat [`docs/BACKEND.md`](docs/BACKEND.md)
-   - Endpoint: `/auth/login`, `/farms`, `/farms/{id}/readings`, `/farms/{id}/irrigation`, `/schedules`, `/tasks`, `/alerts`
-   - Ganti `MockData` dengan `ApiRepository` yang memakai `package:http`.
-2. **Ingest data ESP32** — lihat [`docs/ESP32.md`](docs/ESP32.md)
-   - ESP32 publish ke topik MQTT → backend menyimpan ke MySQL → aplikasi membaca REST.
-3. **Push notification** — Firebase Cloud Messaging atau `flutter_local_notifications`.
-4. **Auth nyata** — JWT/session dari backend, dengan peran pemilik/pekerja.
-5. **Chatbot AI daring** — arahkan `AiAssistantService(endpoint: ...)` ke LLM gratis
+1. **Ingest data sensor — sudah berjalan** di backend SUBAKO
+   ([repo](https://github.com/pratamasathya10-coder/subako.esp-now)):
+   ESP32 → `subako/sensor` → `bridge.py` → TimescaleDB → Grafana. Lihat
+   [`docs/BACKEND.md`](docs/BACKEND.md) §1–5.
+   - Metrik yang masuk baru `temperature` dan `soil_moisture`.
+2. **Lapisan baca HTTP** — backend belum punya REST API. Tambahkan `bridge/api.py`
+   (contoh FastAPI di `docs/BACKEND.md` §6a) dengan endpoint:
+   `/api/devices`, `/api/devices/{id}/readings`, `/api/devices/{id}/readings/latest`.
+3. **Sambungkan aplikasi** — ganti `MockData` dengan `ApiRepository` yang memakai
+   `package:http`, mengikuti kontrak di §6a.
+4. **Lengkapi metrik** — kirim `humidity`, `pressure`, `rain` (BME280 + sensor hujan) dan
+   tambahkan kolomnya di schema; lihat [`docs/ESP32.md`](docs/ESP32.md) §2.
+5. **Push notification** — Firebase Cloud Messaging atau `flutter_local_notifications`.
+6. **Auth nyata** — JWT/session dari backend, dengan peran pemilik/pekerja.
+7. **Chatbot AI daring** — arahkan `AiAssistantService(endpoint: ...)` ke LLM gratis
    (mis. Ollama lokal atau penyedia API gratis).
 
 ---
