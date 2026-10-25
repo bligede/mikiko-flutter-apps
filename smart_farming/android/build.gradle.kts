@@ -1,3 +1,11 @@
+// Some Flutter plugins pin their own Kotlin compiler. Align those buildscript
+// dependencies too, so they can read Firebase's Kotlin 2.4 metadata.
+subprojects {
+    buildscript.configurations.configureEach {
+        resolutionStrategy.force("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.21")
+    }
+}
+
 allprojects {
     repositories {
         google()

@@ -18,20 +18,23 @@ class MockData {
   static Farm _tomatoFarm() {
     return Farm(
       id: farmAId,
-      name: 'Kebun Tomat — Blok A',
-      location: 'Lembang, Jawa Barat',
+      name: 'Kebun Mikiko • Blok A',
+      location: 'Asah Gobleg, Bali',
       crop: 'Tomat',
-      areaHectare: 0.8,
+      areaHectare: 0.17,
       ownerName: 'Budi Santoso',
       members: const ['Budi Santoso', 'Siti Aminah', 'Andi Pratama'],
       metrics: <SensorType, SensorMetric>{
         SensorType.soilMoisture:
-            _metric(SensorType.soilMoisture, base: 31, amplitude: 6, seed: 3),
+            _metric(SensorType.soilMoisture, base: 56, amplitude: 6, seed: 3),
         SensorType.temperature:
             _metric(SensorType.temperature, base: 29.5, amplitude: 4, seed: 11),
-        SensorType.humidity: _metric(SensorType.humidity, base: 68, amplitude: 9, seed: 5),
-        SensorType.pressure: _metric(SensorType.pressure, base: 1009, amplitude: 3, seed: 8),
-        SensorType.rain: _metric(SensorType.rain, base: 0.4, amplitude: 0.8, seed: 2),
+        SensorType.humidity:
+            _metric(SensorType.humidity, base: 68, amplitude: 9, seed: 5),
+        SensorType.pressure:
+            _metric(SensorType.pressure, base: 1009, amplitude: 3, seed: 8),
+        SensorType.rain:
+            _metric(SensorType.rain, base: 0.4, amplitude: 0.8, seed: 2),
       },
       pumpOn: false,
       autoIrrigation: true,
@@ -44,8 +47,8 @@ class MockData {
   static Farm _riceFarm() {
     return Farm(
       id: farmBId,
-      name: 'Sawah Padi — Blok B',
-      location: 'Karawang, Jawa Barat',
+      name: 'Area Pembibitan • Demo',
+      location: 'Asah Gobleg, Bali',
       crop: 'Padi IR64',
       areaHectare: 1.5,
       ownerName: 'Budi Santoso',
@@ -53,13 +56,16 @@ class MockData {
       metrics: <SensorType, SensorMetric>{
         SensorType.soilMoisture:
             _metric(SensorType.soilMoisture, base: 64, amplitude: 7, seed: 21),
-        SensorType.temperature:
-            _metric(SensorType.temperature, base: 31.8, amplitude: 3.5, seed: 13),
-        SensorType.humidity: _metric(SensorType.humidity, base: 76, amplitude: 8, seed: 15),
-        SensorType.pressure: _metric(SensorType.pressure, base: 1007, amplitude: 2.5, seed: 18),
-        SensorType.rain: _metric(SensorType.rain, base: 1.6, amplitude: 1.5, seed: 22),
+        SensorType.temperature: _metric(SensorType.temperature,
+            base: 31.8, amplitude: 3.5, seed: 13),
+        SensorType.humidity:
+            _metric(SensorType.humidity, base: 76, amplitude: 8, seed: 15),
+        SensorType.pressure:
+            _metric(SensorType.pressure, base: 1007, amplitude: 2.5, seed: 18),
+        SensorType.rain:
+            _metric(SensorType.rain, base: 1.6, amplitude: 1.5, seed: 22),
       },
-      pumpOn: true,
+      pumpOn: false,
       autoIrrigation: false,
       moistureThreshold: 55,
       irrigationDurationMinutes: 20,
@@ -202,7 +208,8 @@ class MockData {
         id: 'alert-2',
         farmId: farmAId,
         title: 'Prakiraan hujan ringan',
-        message: 'Curah hujan terdeteksi 0.4 mm. Pertimbangkan menunda penyiraman sore.',
+        message:
+            'Curah hujan terdeteksi 0.4 mm. Pertimbangkan menunda penyiraman sore.',
         level: AlertLevel.info,
         time: now.subtract(const Duration(hours: 3)),
         read: true,

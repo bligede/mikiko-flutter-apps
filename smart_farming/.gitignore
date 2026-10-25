@@ -32,6 +32,11 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+/dist/
+/firebase/node_modules/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
 
 # Symbolication related
 app.*.symbols

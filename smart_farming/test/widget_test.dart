@@ -8,7 +8,8 @@ import 'package:smart_farming/theme/palette.dart';
 import 'package:smart_farming/widgets/brand_logos.dart';
 
 void main() {
-  testWidgets('login menampilkan kedua logo dalam dark mode', (WidgetTester tester) async {
+  testWidgets('login menampilkan kedua logo dalam dark mode',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const SmartFarmingApp());
     await tester.pump();
 
@@ -24,36 +25,41 @@ void main() {
     expect(theme.colorScheme.secondary, Palette.rust);
   });
 
-  testWidgets('login demo membawa pengguna ke dasbor', (WidgetTester tester) async {
+  testWidgets('login demo membawa pengguna ke dasbor',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const SmartFarmingApp());
     await tester.pump();
 
     expect(find.text('Masuk cepat sebagai demo'), findsOneWidget);
     expect(find.byType(HomeShell), findsNothing);
 
+    await tester.ensureVisible(find.text('Masuk cepat sebagai demo'));
     await tester.tap(find.text('Masuk cepat sebagai demo'));
     await tester.pump();
 
     // Hentikan simulasi live agar test tidak menunggu timer.
     final context = tester.element(find.byType(HomeShell));
-    Provider.of<AppState>(context, listen: false).stopLive();
+    Provider.of<AppState>(context, listen: false).suspend();
     await tester.pumpAndSettle();
 
     expect(find.byType(HomeShell), findsOneWidget);
     expect(find.text('Skor Kesehatan Lahan'), findsOneWidget);
     expect(find.text('Monitor Sensor'), findsOneWidget);
-    expect(find.text('Kelembapan Tanah'), findsWidgets);
+    expect(find.text('Soil Tester'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
   });
 
-  testWidgets('navigasi bawah membuka tab irigasi', (WidgetTester tester) async {
+  testWidgets('navigasi bawah membuka tab irigasi',
+      (WidgetTester tester) async {
     await tester.pumpWidget(const SmartFarmingApp());
     await tester.pump();
 
+    await tester.ensureVisible(find.text('Masuk cepat sebagai demo'));
     await tester.tap(find.text('Masuk cepat sebagai demo'));
     await tester.pump();
 
     final context = tester.element(find.byType(HomeShell));
-    Provider.of<AppState>(context, listen: false).stopLive();
+    Provider.of<AppState>(context, listen: false).suspend();
     await tester.pumpAndSettle();
 
     await tester.tap(
@@ -64,7 +70,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Kontrol Manual'), findsOneWidget);
-    expect(find.text('Irigasi Otomatis'), findsOneWidget);
+    expect(find.text('POMPA MATI'), findsOneWidget);
+    expect(find.text('STOP SEMUA OUTPUT'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox());
   });
 }

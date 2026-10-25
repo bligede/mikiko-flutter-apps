@@ -31,21 +31,27 @@ class SensorsScreen extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Perangkat ESP32',
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: Palette.success.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(999),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: <Widget>[
-                        Icon(Icons.wifi, size: 13, color: Palette.success),
-                        SizedBox(width: 4),
+                        Icon(state.nodeOnline ? Icons.wifi : Icons.wifi_off,
+                            size: 13,
+                            color: state.nodeOnline
+                                ? Palette.success
+                                : Palette.danger),
+                        const SizedBox(width: 4),
                         Text(
-                          'Terhubung',
+                          state.nodeOnline ? 'Simulasi online' : 'Node offline',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -58,14 +64,18 @@ class SensorsScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-              const InfoRow('Node', 'esp32-node-01', icon: Icons.router_outlined),
-              const InfoRow('Interval kirim', 'setiap 5 detik', icon: Icons.timer_outlined),
-              InfoRow('Sinkron terakhir', relativeTime(farm.lastSync), icon: Icons.sync),
+              const InfoRow('Node', 'node-01 (demo)',
+                  icon: Icons.router_outlined),
+              const InfoRow('Simulasi', 'setiap 6 detik',
+                  icon: Icons.timer_outlined),
+              InfoRow('Sinkron terakhir', relativeTime(farm.lastSync),
+                  icon: Icons.sync),
             ],
           ),
         ),
         const SizedBox(height: 20),
-        const SectionHeader('Semua Sensor', subtitle: 'Ketuk untuk melihat riwayat lengkap'),
+        const SectionHeader('Semua Sensor',
+            subtitle: 'Ketuk untuk melihat riwayat lengkap'),
         ...kSensorOrder.map((type) {
           final metric = farm.metric(type);
           final status = farm.statusOf(type);
@@ -73,7 +83,8 @@ class SensorsScreen extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 14),
             child: AppCard(
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => SensorDetailScreen(type: type)),
+                MaterialPageRoute<void>(
+                    builder: (_) => SensorDetailScreen(type: type)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -88,10 +99,12 @@ class SensorsScreen extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               type.label,
-                              style: const TextStyle(fontWeight: FontWeight.w700),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700),
                             ),
                             Text(
-                              metric.updatedAt.isAfter(DateTime.now().subtract(const Duration(minutes: 1)))
+                              metric.updatedAt.isAfter(DateTime.now()
+                                      .subtract(const Duration(minutes: 1)))
                                   ? 'live'
                                   : relativeTime(metric.updatedAt),
                               style: theme.textTheme.bodySmall?.copyWith(

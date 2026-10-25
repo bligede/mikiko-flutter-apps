@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "610361322937",
+    "project_id": "mikiko-smart-farming-q9n33a",
+    "storage_bucket": "mikiko-smart-farming-q9n33a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610361322937:android:65dc7a21db4c0e4e6f5a68",
+        "android_client_info": {
+          "package_name": "com.mikiko.smartfarming"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiV5qOkemZRMwa2M9pu_Of_O23DfIKMoA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

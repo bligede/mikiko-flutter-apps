@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    function appCollection(name) {
+      return name in ['farms', 'schedules', 'tasks', 'alerts',
+                      'irrigationLogs', 'soilMeasurements', 'settings'];
+    }
+    match /users/{uid}/{collection}/{id} {
+      allow read: if owner(uid) && appCollection(collection);
+      allow create, update: if owner(uid) && appCollection(collection)
+        && request.resource.data.keys().hasOnly(['payload', 'updatedAt', 'mode'])
+        && request.resource.data.payload is map
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.mode == 'simulation';
+      allow delete: if owner(uid) && appCollection(collection);
+    }
+    // Device telemetry and actuator acknowledgements are reserved for a future
+    // trusted gateway. Mobile simulation cannot impersonate hardware readings.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

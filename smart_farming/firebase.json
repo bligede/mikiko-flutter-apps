@@ -1,0 +1,45 @@
+{
+  "firestore": {
+    "rules": "firebase/firestore.rules",
+    "indexes": "firebase/firestore.indexes.json"
+  },
+  "emulators": {
+    "firestore": {
+      "host": "127.0.0.1",
+      "port": 8085
+    },
+    "auth": {
+      "host": "127.0.0.1",
+      "port": 9099
+    },
+    "ui": {
+      "enabled": false
+    },
+    "singleProjectMode": true
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "mikiko-smart-farming-q9n33a",
+          "appId": "1:610361322937:android:65dc7a21db4c0e4e6f5a68",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "mikiko-smart-farming-q9n33a",
+          "configurations": {
+            "android": "1:610361322937:android:65dc7a21db4c0e4e6f5a68",
+            "web": "1:610361322937:web:70fb28befc4a13cb6f5a68"
+          }
+        }
+      }
+    }
+  },
+  "auth": {
+    "providers": {
+      "anonymous": true
+    }
+  }
+}

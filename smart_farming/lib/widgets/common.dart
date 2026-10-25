@@ -36,7 +36,8 @@ class AppCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.6)),
+            border:
+                Border.all(color: scheme.outlineVariant.withValues(alpha: 0.6)),
           ),
           padding: padding,
           child: child,
@@ -66,7 +67,9 @@ class SectionHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                Text(title,
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w700)),
                 if (subtitle != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
@@ -109,7 +112,8 @@ class StatusPill extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             status.label,
-            style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w700),
+            style: TextStyle(
+                color: color, fontSize: 11, fontWeight: FontWeight.w700),
           ),
         ],
       ),
@@ -119,7 +123,8 @@ class StatusPill extends StatelessWidget {
 
 /// Kartu ringkas satu sensor untuk grid dasbor.
 class SensorCard extends StatelessWidget {
-  const SensorCard({super.key, required this.farm, required this.type, this.onTap});
+  const SensorCard(
+      {super.key, required this.farm, required this.type, this.onTap});
 
   final Farm farm;
   final SensorType type;
@@ -153,21 +158,25 @@ class SensorCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: <Widget>[
-              Text(
-                metric.value.toStringAsFixed(1),
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: color,
-                ),
-              ),
-              const SizedBox(width: 2),
-              Text(type.unit, style: theme.textTheme.bodySmall),
-            ],
-          ),
+          FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: <Widget>[
+                  Text(
+                    metric.value.toStringAsFixed(1),
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: color,
+                    ),
+                  ),
+                  const SizedBox(width: 2),
+                  Text(type.unit, style: theme.textTheme.bodySmall),
+                ],
+              )),
           const SizedBox(height: 2),
           Text(
             type.label,
@@ -210,7 +219,9 @@ class InfoRow extends StatelessWidget {
               ),
             ),
           ),
-          Text(value, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+          Text(value,
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(fontWeight: FontWeight.w600)),
         ],
       ),
     );
@@ -219,7 +230,8 @@ class InfoRow extends StatelessWidget {
 
 /// Tampilan saat daftar kosong.
 class EmptyState extends StatelessWidget {
-  const EmptyState({super.key, required this.icon, required this.title, this.message});
+  const EmptyState(
+      {super.key, required this.icon, required this.title, this.message});
 
   final IconData icon;
   final String title;
@@ -274,7 +286,9 @@ class StatTile extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 2),
-        Text(value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+        Text(value,
+            style: theme.textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700)),
       ],
     );
   }

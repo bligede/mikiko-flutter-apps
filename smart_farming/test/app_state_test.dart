@@ -49,6 +49,13 @@ void main() {
   });
 
   group('Irigasi', () {
+    test('siram sekarang menyalakan pompa dan mencatat durasi yang dipilih',
+        () {
+      state.runIrrigation(minutes: 5);
+      expect(state.selectedFarm.pumpOn, isTrue);
+      expect(state.irrigationLogs.first.durationMinutes, 5);
+    });
+
     test('togglePump membalik status pompa', () {
       final before = state.selectedFarm.pumpOn;
       state.togglePump();
@@ -66,7 +73,8 @@ void main() {
       state.simulateTick();
 
       expect(state.selectedFarm.pumpOn, isTrue);
-      expect(state.alerts.any((a) => a.title == 'Irigasi otomatis aktif'), isTrue);
+      expect(
+          state.alerts.any((a) => a.title == 'Irigasi otomatis aktif'), isTrue);
     });
 
     test('durasi penyiraman tersimpan sebagai angka bulat', () {
@@ -105,8 +113,7 @@ void main() {
     test('toggleTask menandai tugas selesai', () {
       final task = state.tasks.first;
       state.toggleTask(task.id);
-      final updated =
-          state.tasks.firstWhere((t) => t.id == task.id);
+      final updated = state.tasks.firstWhere((t) => t.id == task.id);
       expect(updated.done, !task.done);
     });
   });

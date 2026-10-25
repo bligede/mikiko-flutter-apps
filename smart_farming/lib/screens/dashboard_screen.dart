@@ -7,6 +7,9 @@ import '../theme/palette.dart';
 import '../widgets/common.dart';
 import 'alerts_screen.dart';
 import 'sensor_detail_screen.dart';
+import 'soil_tester_screen.dart';
+import 'devices_screen.dart';
+import '../models/soil_measurement.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -20,38 +23,111 @@ class DashboardScreen extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () async {
         await Future<void>.delayed(const Duration(milliseconds: 500));
-        state.setLiveData(state.liveData);
+        state.simulateTick();
       },
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
         children: <Widget>[
           _HealthCard(farm: farm),
+          if (state.cloudSyncError != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child:
+                  Text(state.cloudSyncError!, style: theme.textTheme.bodySmall),
+            ),
+          const SizedBox(height: 18),
+          Row(children: [
+            Expanded(
+                child: AppCard(
+                    onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                            builder: (_) => const SoilTesterScreen())),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.science_outlined,
+                              color: theme.colorScheme.primary),
+                          const SizedBox(height: 12),
+                          const Text('Soil Tester',
+                              style: TextStyle(fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 3),
+                          Text('7 parameter tanah',
+                              style: theme.textTheme.bodySmall),
+                        ]))),
+            const SizedBox(width: 12),
+            Expanded(
+                child: AppCard(
+                    onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                            builder: (_) => const DevicesScreen())),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.developer_board,
+                              color: theme.colorScheme.primary),
+                          const SizedBox(height: 12),
+                          const Text('Perangkat',
+                              style: TextStyle(fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 3),
+                          Text(
+                              state.nodeOnline
+                                  ? '4 perangkat simulasi'
+                                  : '1 node offline',
+                              style: theme.textTheme.bodySmall),
+                        ]))),
+          ]),
+          const SizedBox(height: 22),
+          const SectionHeader('Skenario Demo',
+              subtitle: 'Pilih kondisi untuk melihat respons sistem'),
+          Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: DemoScenario.values
+                  .map((s) => ChoiceChip(
+                        label: Text(s.label),
+                        selected: state.scenario == s,
+                        onSelected: (_) => state.applyScenario(s),
+                      ))
+                  .toList()),
+          if (state.storageError)
+            const Padding(
+                padding: EdgeInsets.only(top: 12),
+                child: Text(
+                    'Penyimpanan lokal tidak tersedia. Perubahan sesi ini mungkin tidak tersimpan.')),
           const SizedBox(height: 18),
           SectionHeader(
             'Monitor Sensor',
             subtitle: 'Diperbarui ${relativeTime(farm.lastSync)}',
           ),
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1.65,
-            children: kSensorOrder
-                .map(
-                  (type) => SensorCard(
-                    farm: farm,
-                    type: type,
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => SensorDetailScreen(type: type),
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
+          LayoutBuilder(
+              builder: (context, constraints) => GridView.count(
+                    crossAxisCount: constraints.maxWidth > 650
+                        ? 3
+                        : constraints.maxWidth < 300
+                            ? 1
+                            : 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio:
+                        MediaQuery.textScalerOf(context).scale(1) > 1.2
+                            ? .85
+                            : 1.15,
+                    children: kSensorOrder
+                        .map(
+                          (type) => SensorCard(
+                            farm: farm,
+                            type: type,
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => SensorDetailScreen(type: type),
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  )),
           const SizedBox(height: 22),
           SectionHeader('Aksi Cepat'),
           Row(
@@ -68,8 +144,12 @@ class DashboardScreen extends StatelessWidget {
               Expanded(
                 child: _QuickAction(
                   icon: Icons.autorenew,
-                  label: farm.autoIrrigation ? 'Otomatis\nAKTIF' : 'Otomatis\nMATI',
-                  color: farm.autoIrrigation ? Palette.success : theme.colorScheme.outline,
+                  label: farm.autoIrrigation
+                      ? 'Otomatis\nAKTIF'
+                      : 'Otomatis\nMATI',
+                  color: farm.autoIrrigation
+                      ? Palette.success
+                      : theme.colorScheme.outline,
                   onTap: () => state.setAutoIrrigation(!farm.autoIrrigation),
                 ),
               ),
@@ -136,7 +216,7 @@ class _HealthCard extends StatelessWidget {
     final scheme = theme.colorScheme;
     final score = farm.healthScore;
     final color = score >= 75
-        ? Palette.success
+        ? scheme.onPrimary
         : score >= 50
             ? Palette.warning
             : Palette.danger;
@@ -145,7 +225,10 @@ class _HealthCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: <Color>[scheme.primary, scheme.primary.withValues(alpha: 0.78)],
+          colors: <Color>[
+            scheme.primary,
+            scheme.primary.withValues(alpha: 0.78)
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -162,26 +245,32 @@ class _HealthCard extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       'Skor Kesehatan Lahan',
-                      style: theme.textTheme.labelMedium?.copyWith(color: scheme.onPrimary),
+                      style: theme.textTheme.labelMedium
+                          ?.copyWith(color: scheme.onPrimary),
                     ),
                     const SizedBox(height: 4),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: <Widget>[
-                        Text(
-                          '$score',
-                          style: theme.textTheme.displaySmall?.copyWith(
-                            color: scheme.onPrimary,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        Text(
-                          ' / 100',
-                          style: theme.textTheme.titleSmall?.copyWith(color: scheme.onPrimary),
-                        ),
-                      ],
-                    ),
+                    FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: <Widget>[
+                            Text(
+                              '$score',
+                              style: theme.textTheme.displaySmall?.copyWith(
+                                color: scheme.onPrimary,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            Text(
+                              ' / 100',
+                              style: theme.textTheme.titleSmall
+                                  ?.copyWith(color: scheme.onPrimary),
+                            ),
+                          ],
+                        )),
                   ],
                 ),
               ),
@@ -207,9 +296,11 @@ class _HealthCard extends StatelessWidget {
                 label: farm.pumpOn ? 'Pompa menyala' : 'Pompa mati',
               ),
               _Chip(
-                icon: farm.autoIrrigation ? Icons.autorenew : Icons.pan_tool_alt_outlined,
+                icon: farm.autoIrrigation
+                    ? Icons.autorenew
+                    : Icons.pan_tool_alt_outlined,
                 label: farm.autoIrrigation
-                    ? 'Otomatis > ${farm.moistureThreshold.toStringAsFixed(0)}%'
+                    ? 'Mulai < ${farm.moistureThreshold.toStringAsFixed(0)}%'
                     : 'Mode manual',
               ),
               _Chip(icon: Icons.square_foot, label: '${farm.areaHectare} ha'),
@@ -243,7 +334,10 @@ class _Chip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: TextStyle(color: scheme.onPrimary, fontSize: 12, fontWeight: FontWeight.w600),
+            style: TextStyle(
+                color: scheme.onPrimary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -276,7 +370,8 @@ class _QuickAction extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, height: 1.15),
+            style: const TextStyle(
+                fontSize: 12, fontWeight: FontWeight.w600, height: 1.15),
           ),
         ],
       ),
@@ -315,9 +410,11 @@ class _TaskTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: <Widget>[
-                      Icon(task.type.icon, size: 13, color: theme.colorScheme.onSurfaceVariant),
+                      Icon(task.type.icon,
+                          size: 13, color: theme.colorScheme.onSurfaceVariant),
                       const SizedBox(width: 5),
                       Text(
                         task.type.label,

@@ -1,5 +1,13 @@
 # Mikiko Flutter Apps
 
+**Backend Firebase (v0.3.0):** Cloud Firestore, autentikasi anonim, aturan akses
+per pengguna, cache offline, dan migrasi data demo. Lihat
+[konfigurasi dan panduan Firebase](smart_farming/docs/FIREBASE.md).
+
+**Demo Android MIKIKO V4 (v0.2.0):** panduan pemasangan APK, alur presentasi,
+fitur soil tester 7-in-1, kontrol 8 kanal, dan batas integrasi tersedia di
+[Panduan demo Android](smart_farming/docs/DEMO_ANDROID.md).
+
 Kumpulan aplikasi **Flutter** yang dikembangkan oleh **Mikiko Technology**, dengan
 aktivitas yang dipayungi komunitas **Petani Muda Keren**.
 
@@ -77,7 +85,7 @@ kode sehingga tampilan tetap rapi. Detail ada di
 
 ### Prasyarat
 
-- **Flutter SDK** stable — diuji pada **Flutter 3.47.7 / Dart 3.13.5**
+- **Flutter SDK** stable — demo Android diuji pada **Flutter 3.41.9 / Dart 3.11.5**
 - Android Studio (Android) dan/atau Xcode (iOS)
 - Emulator/perangkat Android/iOS, atau Chrome (target web)
 
@@ -112,7 +120,7 @@ flutter build web --release      # web
 ### Cara masuk (demo)
 
 Di layar login, tekan **"Masuk cepat sebagai demo"** — tidak perlu backend.
-Akun: `demo@smartfarming.id` (nama **Pak Budi**).
+Profil demo lokal: `demo@mikiko.id` (nama **Petani Mikiko**); tidak memerlukan akun server.
 
 ---
 
